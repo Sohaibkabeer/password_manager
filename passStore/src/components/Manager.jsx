@@ -7,12 +7,12 @@ const Manager = () => {
         <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#d5c5ff,transparent)]"></div>
       </div>
       <div className="mx-auto bg-slate-500 mycontainer">
-        <h1 className="text-2xl text font-bold text-center">
+        <h1 className="text-2xl text-white font-bold text-center">
           <span className="text-green-600">&lt;</span>
           Pass
           <span className="text-green-600">Store/&gt;</span>
         </h1>
-        <p>Your own Password Manager</p>
+        <p className="text-green-600 text-lg text-center">Your own Password Manager</p>
         <div className="text-white flex flex-col p-4">
           <input type="text" name="" id="" />
           <div className="flex">
