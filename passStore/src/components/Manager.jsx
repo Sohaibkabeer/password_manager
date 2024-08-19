@@ -1,15 +1,37 @@
 import React from "react";
 import passView from "../assets/view_eye.png";
 import passHide from "../assets/hide_eye.png";
-import { useRef } from "react";
-
+import { useRef, useState, useEffect } from "react";
 
 const Manager = () => {
-    const ref = useRef();
-const showPassword = () =>{
-    if(ref.current.src.includes(passView))ref.current.src = passHide;
-    else ref.current.src = passView;
-};
+  const [form, setForm] = useState({ site: "", username: "", password: "" });
+  const [passwordArray, setPasswordArray] = useState([]);
+  const ref = useRef();
+
+  useEffect(() => {
+    let passwords = localStorage.getItem("passwords");
+    if (passwords) {
+      setPasswordArray(JSON.parse(passwords));
+    }
+  }, []);
+
+  const showPassword = () => {
+    if (ref.current.src.includes(passView)) {
+      ref.current.src = passHide;
+    } else {
+      ref.current.src = passView;
+    }
+  };
+
+  const savePassword = () => {
+    setPasswordArray([...passwordArray, form]);
+    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
+    console.log([...passwordArray, form]);
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   return (
     <>
@@ -25,43 +47,90 @@ const showPassword = () =>{
         <p className="text-green-600 text-lg text-center">
           Your own Password Manager
         </p>
-        <div className="text-white flex flex-col p-4 text-black gap-8 items-center">
+        <div className="text-black flex flex-col p-4 text-black gap-8 items-center">
           <input
+            value={form.site}
+            onChange={handleChange}
             className="rounded-full border border-green-500 w-full p-4 py-1"
             type="text"
-            name=""
+            name="site"
             id=""
             placeholder="Enter website URL"
           />
           <div className="flex w-full jusify-between gap-8">
             <input
+              value={form.username}
+              onChange={handleChange}
               className="rounded-full border border-green-500 w-full p-4 py-1"
               type="text"
-              name=""
+              name="username"
               id=""
               placeholder="Enter username"
             />
             <div className="relative">
               <input
+                value={form.password}
+                onChange={handleChange}
                 className="rounded-full border border-green-500 w-full p-4 py-1"
-                type="text"
-                name=""
+                type="password"
+                name="password"
                 id=""
                 placeholder="Enter password"
               />
-              <span className="absolute right-[2px] top-1 cursor-pointer"onClick={showPassword}>
-                <img className="p-1" width={25} ref={ref} src={passHide} alt=""/>
+              <span
+                className="absolute right-[2px] top-1 cursor-pointer"
+                onClick={showPassword}
+              >
+                <img
+                  className="p-1"
+                  width={25}
+                  ref={ref}
+                  src={passHide}
+                  alt=""
+                />
               </span>
             </div>
           </div>
 
-          <button className="flex justify-center items-center bg-green-600 hover:bg-green-500  rounded-full px-4 py-2 w-fit border-green-900 border">
+          <button
+            className="flex justify-center items-center bg-green-600 hover:bg-green-500  rounded-full px-4 py-2 w-fit border-green-900 border"
+            onClick={savePassword}
+          >
             <lord-icon
               src="https://cdn.lordicon.com/zrkkrrpl.json"
               trigger="hover"
             ></lord-icon>
             Add Password
           </button>
+        </div>
+        <div className="passwords">
+          <h2 className="flex justify-center font-bold py-5">Your Passwords</h2>
+          <table className="table-auto w-full">
+            <thead className="bg-green-700 text-white">
+              <tr>
+                <th>Song</th>
+                <th>Artist</th>
+                <th>Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="text-center">The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                <td className="text-center">Malcolm Lockyer</td>
+                <td className="text-center">1961</td>
+              </tr>
+              <tr>
+                <td className="text-center">Witchy Woman</td>
+                <td className="text-center">The Eagles</td>
+                <td className="text-center">1972</td>
+              </tr>
+              <tr>
+                <td className="text-center">Shining Star</td>
+                <td className="text-center">Earth, Wind, and Fire</td>
+                <td className="text-center">1975</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </>
