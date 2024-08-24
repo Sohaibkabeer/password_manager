@@ -2,11 +2,13 @@ import React from "react";
 import passView from "../assets/view_eye.png";
 import passHide from "../assets/hide_eye.png";
 import { useRef, useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid'; // for random id generation
 
 const Manager = () => {
   const [form, setForm] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
   const ref = useRef();
+  const passwordRef = useRef();
 
   useEffect(() => {
     let passwords = localStorage.getItem("passwords");
@@ -18,15 +20,21 @@ const Manager = () => {
   const showPassword = () => {
     if (ref.current.src.includes(passView)) {
       ref.current.src = passHide;
+      passwordRef.current.type = 'text' 
     } else {
       ref.current.src = passView;
+      passwordRef.current.type = 'password' 
     }
   };
 
   const savePassword = () => {
-    setPasswordArray([...passwordArray, form]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
-    console.log([...passwordArray, form]);
+    setPasswordArray([...passwordArray, {...form, id:uuidv4()}]);
+    localStorage.setItem("passwords", JSON.stringify([...passwordArray, {...form, id:uuidv4()}]));
+  };
+
+  const deletePassword = (id) => {
+setPasswordArray(passwordArray.filter(item=>item.id!==id))
+localStorage.setItem("passwords", JSON.stringify(passwordArray.filter(item=>item.id!==id)));
   };
 
   const handleChange = (e) => {
@@ -72,6 +80,7 @@ const Manager = () => {
                 value={form.password}
                 onChange={handleChange}
                 className="rounded-full border border-green-500 w-full p-4 py-1"
+                ref={passwordRef}
                 type="password"
                 name="password"
                 id=""
@@ -85,7 +94,7 @@ const Manager = () => {
                   className="p-1"
                   width={25}
                   ref={ref}
-                  src={passHide}
+                  src={passView}
                   alt=""
                 />
               </span>
@@ -100,37 +109,36 @@ const Manager = () => {
               src="https://cdn.lordicon.com/zrkkrrpl.json"
               trigger="hover"
             ></lord-icon>
-            Add Password
+            Save
           </button>
         </div>
         <div className="passwords">
-          <h2 className="flex justify-center font-bold py-5">Your Passwords</h2>
-          <table className="table-auto w-full">
-            <thead className="bg-green-700 text-white">
-              <tr>
-                <th>Song</th>
-                <th>Artist</th>
-                <th>Year</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="text-center">The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-                <td className="text-center">Malcolm Lockyer</td>
-                <td className="text-center">1961</td>
-              </tr>
-              <tr>
-                <td className="text-center">Witchy Woman</td>
-                <td className="text-center">The Eagles</td>
-                <td className="text-center">1972</td>
-              </tr>
-              <tr>
-                <td className="text-center">Shining Star</td>
-                <td className="text-center">Earth, Wind, and Fire</td>
-                <td className="text-center">1975</td>
-              </tr>
-            </tbody>
-          </table>
+          <h2 className="flex justify-center text-2xl font-bold py-5">
+            Your Passwords
+          </h2>
+          {passwordArray.length === 0 && <div> No password to show </div>}
+          {passwordArray.length != 0 && (
+            <table className="table-auto w-full rounded-md overflow-hidden">
+              <thead className="bg-green-700 text-white">
+                <tr>
+                  <th className="py-2">Site</th>
+                  <th className="py-2">Username</th>
+                  <th className="py-2">Password</th>
+                  <th className="py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-green-100">
+                {passwordArray.map((item)=>{
+                  return<tr>
+                    <td className="py-2 border border-white text-center w-32"><a href={item.site} target='_blank'>{item.site}</a></td>
+                    <td className="py-2 border border-white text-center w-32">{item.username}</td>
+                    <td className="py-2 border border-white text-center w-32">{item.password}</td>
+                    <td className="py-2 border border-white text-center w-32"><span className="cursor-poiner mx-2"><button>Edit</button></span><span><button onClick={()=>{deletePassword(item.id)}}>Delete</button></span></td>
+                  </tr>
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </>
